@@ -34,5 +34,91 @@ namespace EcoRideAPI.Helpers
 
             }
         }
+
+        //MONTANT EN CENTIME 10€ = 1000
+        public static Charge chargePayementStripe(string secret_key, string customerID, int montant, string description_, string etablissementStripeAccountID, string cardSourceCountry, string cardSourceID)
+        {
+            try
+            {
+                StripeConfiguration.SetApiKey(secret_key);
+                var frais_stripe = fraisStripe(montant, cardSourceCountry);
+                var options = new ChargeCreateOptions
+                {
+                    Amount = montant,
+                    Currency = "eur",
+                    Description = description_,
+                    CustomerId = customerID,
+                    Capture = false,
+                    SourceId = cardSourceID,
+                    //SourceTokenOrExistingSourceId = cardSourceID,
+                };
+                var service = new ChargeService();
+                Charge charge = service.Create(options);
+                return charge;
+            }
+            catch (StripeException e)
+            {
+                return null;
+            }
+
+        }
+
+        //RETRIEVE A CHARGE
+        public static Charge retrieveChargePaymentStripe(string secret_key, string idcharge)
+        {
+            try
+            {
+                StripeConfiguration.SetApiKey(secret_key);
+                var service = new ChargeService();
+                var charge = service.Get(idcharge);
+                return charge;
+
+            }
+            catch (StripeException e)
+            {
+                return null;
+            }
+        }
+
+        //CAPTURE LIST OF CHARGE
+        public static List<Charge> capturePayements(string secretKey, List<string> idPayement)
+        {
+            try
+            {
+                //get list of source from DB
+                if (idPayement != null)
+                {
+                    StripeConfiguration.SetApiKey(secretKey);
+                    var service = new ChargeService();
+                    Charge charge = new Charge();
+                    List<Charge> listResultCharge = new List<Charge>();
+                    foreach (var t in idPayement)
+                    {
+                        try
+                        {
+                            DateTime dateNow = DateTime.Now;
+                            charge = service.Capture(t, null);
+                            //todo : dateCapture=now in Payment Table (DB part)
+                        }
+                        catch (StripeException stripeEx)
+                        {
+                            return null;
+                        }
+                        listResultCharge.Add(charge);
+                    }
+                    return listResultCharge;
+                        
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+            
+        }
     }
 }
