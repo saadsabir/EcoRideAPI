@@ -81,7 +81,7 @@ namespace EcoRideAPI.Helpers
         }
 
         //CAPTURE LIST OF CHARGE
-        public static List<Charge> capturePayements(string secretKey, int[] idPayement)
+        public static List<Charge> capturePayements(string secretKey, List<string> idPayement)
         {
             try
             {
