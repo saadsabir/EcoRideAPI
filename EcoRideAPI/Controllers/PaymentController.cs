@@ -17,7 +17,6 @@ namespace EcoRideAPI.Controllers
         public int montant { get; set; }
         public string description { get; set; }
         public string customerID { get; set; }
-        public string accountID { get; set; }
         public string cardSourceCountry { get; set; }
         public string cardSourceID { get; set; }
     }
@@ -29,7 +28,7 @@ namespace EcoRideAPI.Controllers
         {
             try
             {
-                var charge = PaymentHelpers.chargePayementStripe(AccountController.StripeApiKeysAndInfo.sk, request.customerID, request.montant, request.description, request.accountID, request.cardSourceCountry, request.cardSourceID);
+                var charge = PaymentHelpers.chargePayementStripe(AccountController.StripeApiKeysAndInfo.sk, request.customerID, request.montant, request.description, request.cardSourceCountry, request.cardSourceID);
                 if (charge != null)
                 {
                     return Ok(new Response<Charge>()
